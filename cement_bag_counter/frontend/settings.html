@@ -41,7 +41,7 @@
         <h1>System Settings</h1>
         <div class="form-group">
             <label>API Endpoint (Internal)</label>
-            <input type="text" value="http://172.18.170.109:8000" disabled>
+            <input type="text" id="apiEndpoint" value="" disabled>
         </div>
         <div class="form-group">
             <label>Notification Email</label>
@@ -83,6 +83,12 @@
             if (localStorage.getItem('theme') === 'light') {
                 document.body.classList.add('light-mode');
                 window.addEventListener('DOMContentLoaded', () => updateThemeIcon(true));
+            }
+            
+            // Dynamically set API Endpoint to current host
+            const apiInput = document.getElementById('apiEndpoint');
+            if(apiInput) {
+                apiInput.value = window.location.origin;
             }
         })();
     </script>
