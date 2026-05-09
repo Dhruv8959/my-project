@@ -1,0 +1,17 @@
+venv/
+uploads/
+outputs/
+runs/
+__pycache__/
+
+*.mp4
+*.csv
+*.db
+*.sqlite3
+
+*.pt
+*.pth
+*.onnx
+
+.idea/
+.vscode/

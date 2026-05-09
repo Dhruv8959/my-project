@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: cement-bag-counter
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 10.27.48.109 --port 8000

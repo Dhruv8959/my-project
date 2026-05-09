@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - CementVision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-orange: #f05e23;
+            --bg-color: #0f172a;
+            --text-main: #f1f5f9;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+        }
+        body.light-mode {
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px; transition: background 0.3s, color 0.3s; }
+        .container { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: relative; }
+        h1 { margin-top: 0; font-size: 1.5rem; font-weight: 800; color: var(--brand-orange); }
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #64748b; }
+        input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; }
+        .btn { background: var(--brand-orange); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .btn-logout { background: #ef4444; margin-top: 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--brand-orange); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" style="position: absolute; top: 40px; right: 40px; background:none; border:none; color:var(--text-main); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; transition:color 0.2s; border-radius: 50%;">
+            <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+        <h1>System Settings</h1>
+        <div class="form-group">
+            <label>API Endpoint (Internal)</label>
+            <input type="text" value="http://172.18.170.109:8000" disabled>
+        </div>
+        <div class="form-group">
+            <label>Notification Email</label>
+            <input type="email" value="admin@factory.com">
+        </div>
+        <div class="form-group">
+            <label>Storage Path</label>
+            <input type="text" value="./outputs" disabled>
+        </div>
+        <button class="btn">Save Configuration</button>
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid var(--border-color);">
+        <button class="btn btn-logout" onclick="logout()">LOG OUT SYSTEM</button>
+    </div>
+    <script>
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_role');
+            window.location.href = '/login';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            updateThemeIcon(isLight);
+        }
+
+        function updateThemeIcon(isLight) {
+            const icon = document.getElementById('themeIcon');
+            if (!icon) return;
+            if (isLight) {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+
+        (function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+                window.addEventListener('DOMContentLoaded', () => updateThemeIcon(true));
+            }
+        })();
+    </script>
+</body>
+</html>

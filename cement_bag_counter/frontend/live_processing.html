@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Reports - CementVision Bag Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-orange: #f05e23;
+            --brand-orange-hover: #ff7d47;
+            --bg-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --success-green: #22c55e;
+            --card-bg: #1e293b;
+            --sidebar-width: 260px;
+            --hover-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode {
+            --bg-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --hover-bg: rgba(0, 0, 0, 0.05);
+        }
+
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+        }
+
+        .sidebar-logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--brand-orange);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 20px;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin: 4px 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-main);
+        }
+
+
+        .nav-item.active .nav-link {
+            background-color: #fff7ed;
+            color: var(--brand-orange);
+            border-right: 4px solid var(--brand-orange);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sidebar-bottom {
+            padding: 24px;
+        }
+
+        .bottom-nav-menu {
+            list-style: none;
+        }
+        
+        .operator-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .operator-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            background-color: #1e293b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .operator-details h4 {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .operator-details span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Main Content --- */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 64px;
+            background-color: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .topbar-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--brand-orange);
+            border-bottom: 2px solid var(--brand-orange);
+            padding-bottom: 2px;
+            letter-spacing: 0.05em;
+        }
+
+        .network-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            letter-spacing: 0.05em;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .top-search {
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            transition: all 0.2s;
+        }
+
+        .top-search:focus-within {
+            width: 280px;
+            border-color: var(--brand-orange);
+            background: rgba(0,0,0,0.3);
+        }
+
+        .top-search svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            margin-right: 10px;
+        }
+
+        .top-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            width: 100%;
+            font-weight: 500;
+        }
+        .top-search input::placeholder {
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            padding: 8px;
+            margin-top: 8px;
+        }
+        .profile-dropdown.active {
+            display: flex;
+        }
+        .profile-dropdown a {
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .profile-dropdown a:hover {
+            background: var(--hover-bg);
+        }
+        .profile-dropdown .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
+        .profile-dropdown .logout-link {
+            color: #ef4444;
+        }
+
+
+        .notification-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-main);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            border: 2px solid var(--sidebar-bg);
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 280px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            padding: 8px;
+        }
+        .dropdown-menu.active { display: flex; }
+        .dropdown-item {
+            padding: 12px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .dropdown-item:hover { background: rgba(255,255,255,0.05); }
+
+
+        /* Content Area */
+        .content {
+            padding: 32px;
+            display: flex;
+            gap: 32px;
+            flex: 1;
+            max-width: 1600px;
+        }
+
+        /* Left Column */
+        .left-col {
+            width: 320px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .params-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-top: 3px solid var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header svg {
+            color: var(--brand-orange);
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .param-group {
+            margin-bottom: 24px;
+        }
+
+        .param-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .param-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .param-value-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--brand-orange);
+        }
+
+        /* Slider */
+        .slider-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .slider-track {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .slider-fill {
+            height: 100%;
+            background: var(--brand-orange);
+            border-radius: 3px;
+            width: 75%;
+        }
+        
+        .slider-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--brand-orange-dark);
+            position: absolute;
+            top: -5px;
+            left: 75%;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-light);
+            font-family: monospace;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            position: absolute;
+            top: -5px;
+            left: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Button Group */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-radio {
+            flex: 1;
+            padding: 8px 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        .btn-radio.active {
+            background: #1e293b;
+            color: white;
+            border-color: #1e293b;
+        }
+
+        /* Select */
+        .custom-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 10px auto;
+        }
+
+        /* Start Button */
+        .btn-start-huge {
+            width: 100%;
+            background-color: #b33e10;
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        .btn-start-huge:hover {
+            background-color: #90300a;
+        }
+        
+        .btn-start-huge:disabled {
+            background-color: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        /* Small Stats */
+        .small-stats {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .small-stat {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+        }
+        
+        .small-stat-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+        
+        .small-stat-val {
+            font-size: 1.2rem;
+            font-weight: 800;
+            font-family: monospace;
+            color: var(--text-main);
+        }
+        
+        .val-orange {
+            color: var(--brand-orange);
+        }
+
+        /* Right Column */
+        .right-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            flex: 1;
+            border: 2px dashed var(--text-light);
+            background: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 400px;
+        }
+        
+        .upload-zone.drag-over {
+            border-color: var(--brand-orange);
+            background: rgba(240, 94, 35, 0.05);
+        }
+        
+        .upload-icon-wrap {
+            width: 80px;
+            height: 80px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            color: #64748b;
+        }
+
+        .upload-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .upload-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .upload-desc code {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.85rem;
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-dark {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .btn-outline-dark {
+            background: transparent;
+            color: #334155;
+            border: 2px solid #334155;
+            padding: 10px 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        #fileInput {
+            display: none;
+        }
+        
+        /* Video Preview Overlay */
+        .video-preview-overlay {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
+        
+        .video-preview-overlay.active {
+            display: flex;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #1e293b;
+            color: white;
+        }
+        
+        .preview-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+        
+        .btn-close-preview {
+            background: none;
+            border: 1px solid #475569;
+            color: white;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        
+        video#previewPlayer {
+            flex: 1;
+            width: 100%;
+            height: calc(100% - 45px);
+            object-fit: contain;
+        }
+
+        /* Recent Jobs Table */
+        .recent-table-wrap {
+            background: white;
+            border: 1px solid var(--text-main);
+        }
+
+        .table-header {
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        
+        .table-subtitle {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 12px 24px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .history-table td {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--text-main);
+            vertical-align: middle;
+            font-family: monospace;
+        }
+        
+        .td-orange {
+            color: var(--brand-orange) !important;
+            font-weight: 700;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'Inter', sans-serif;
+            display: inline-block;
+        }
+        
+        .status-success {
+            background: var(--success-bg);
+            color: #166534;
+        }
+        
+        .status-failed {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+        
+        /* Progress Overlay inside Left Col */
+        .progress-overlay {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            transition: bottom 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 20;
+        }
+        
+        .progress-overlay.active {
+            bottom: 0;
+        }
+        
+        .prog-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        
+        .prog-bar-bg {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .prog-bar-fill {
+            height: 100%;
+            background: var(--brand-orange);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">CementVision</div>
+            <div class="sidebar-subtitle">V3.2 Industrial</div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a href="/live" class="nav-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
+                    Live Processing
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/shifts" class="nav-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Shift & Logs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/report" class="nav-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Detailed Reports
+                </a>
+            </li>
+        </ul>
+
+
+        <div class="sidebar-bottom">
+            <ul class="bottom-nav-menu">
+                <li class="nav-item">
+                    <a href="/health" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                        System Health
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33-1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="operator-info">
+                <div class="operator-avatar">
+                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="operator-details">
+                    <h4 id="sidebarOpName">OPERATOR</h4>
+                    <span id="sidebarOpRole">Shift A - Active</span>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left" style="display:flex; align-items:center; gap:24px;">
+                <div class="topbar-title" style="font-weight: 800; font-size: 1.1rem; letter-spacing: 0.05em; color: var(--text-main); text-transform: uppercase;">CementVision Bag Counter</div>
+                <div class="status-badge" onclick="alert('System Status: All sensors operational. Last check: Just now.')" style="font-size: 0.75rem; font-weight: 700; color: var(--brand-orange); border-bottom: 2px solid var(--brand-orange); padding-bottom: 2px; letter-spacing: 0.05em; cursor:pointer;">SYSTEM STATUS: READY</div>
+                <div class="network-badge" onclick="alert('Network: Latency 12ms | Bandwidth 500Mbps | Connection: Secure SSL')" style="font-size: 0.75rem; font-weight: 600; color: var(--text-light); letter-spacing: 0.05em; cursor:pointer;">NETWORK: OPTIMAL</div>
+            </div>
+                <div class="top-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="jobSearchInput" placeholder="SEARCH LOGS..." oninput="handleJobSearch(this.value)">
+                </div>
+                <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; transition:color 0.2s; border-radius: 50%;">
+                    <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <div style="position: relative;">
+                    <button class="notification-btn" onclick="toggleDropdown('notifDropdown')" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:8px; position:relative;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span style="position:absolute; top:4px; right:4px; width:8px; height:8px; background:#ef4444; border-radius:50%; border:2px solid var(--sidebar-bg);"></span>
+                    </button>
+                    <div id="notifDropdown" class="dropdown-menu">
+                        <div style="padding: 8px 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 8px; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Notifications</div>
+                        <div class="dropdown-item">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success-green);"></div>
+                            <div>System Startup Successful</div>
+                        </div>
+                        <div style="padding: 12px; text-align: center; font-size: 0.75rem; color: var(--brand-orange); cursor: pointer;">VIEW ALL</div>
+                    </div>
+                </div>
+                <div style="position: relative;">
+                    <div class="user-profile" onclick="toggleDropdown('profileDropdown')" style="cursor:pointer;">
+                        <div class="user-avatar" style="border: 1px solid var(--border-color); background: transparent;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                    </div>
+                    <div id="profileDropdown" class="profile-dropdown">
+                        <div style="padding: 8px 12px; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); margin-bottom: 4px;" id="profileName">OPERATOR</div>
+                        <a href="/settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33"></path></svg> Settings</a>
+                        <div class="divider"></div>
+                        <a onclick="logout()" class="logout-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            
+            <!-- Left Column: Parameters -->
+            <div class="left-col" style="position: relative; overflow: hidden;">
+                <div class="params-card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        <span class="card-title">PROCESSING PARAMETERS</span>
+                    </div>
+
+                    <!-- Confidence Slider -->
+                    <div class="param-group">
+                        <div class="param-label-row">
+                            <span class="param-label">CONFIDENCE THRESHOLD</span>
+                            <span class="param-value-text" id="confValText">0.75</span>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-track"></div>
+                            <div class="slider-fill" id="confFill"></div>
+                            <div class="slider-thumb" id="confThumb"></div>
+                            <input type="range" id="confInput" min="0.10" max="0.95" step="0.01" value="0.75">
+                        </div>
+                        <div class="slider-labels">
+                            <span>0.10</span>
+                            <span>0.95</span>
+                        </div>
+                    </div>
+
+                    <!-- Frame Skip Rate -->
+                    <div class="param-group">
+                        <div class="param-label-row">
+                            <span class="param-label">FRAME SKIP RATE</span>
+                            <span class="param-value-text" id="skipValText" style="color: var(--brand-orange);">1</span>
+                        </div>
+                        <div class="btn-group" id="skipGroup">
+                            <button class="btn-radio active" data-val="1">1</button>
+                            <button class="btn-radio" data-val="2">2</button>
+                            <button class="btn-radio" data-val="3">3</button>
+                            <button class="btn-radio" data-val="4">4</button>
+                            <button class="btn-radio" data-val="5">5</button>
+                        </div>
+                    </div>
+
+                    <!-- Inference Model -->
+                    <div class="param-group">
+                        <div class="param-label-row">
+                            <span class="param-label">INFERENCE MODEL</span>
+                        </div>
+                        <select class="custom-select">
+                            <option>BEST.PT (HIGH ACCURACY)</option>
+                            <option>FAST.PT (HIGH SPEED)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-start-huge" id="btnStart" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        START BATCH<br>PROCESSING
+                    </button>
+                </div>
+
+                <!-- Small Stats -->
+                <div class="small-stats">
+                    <div class="small-stat">
+                        <div class="small-stat-label">UPTIME</div>
+                        <div class="small-stat-val">142h 12m</div>
+                    </div>
+                    <div class="small-stat">
+                        <div class="small-stat-label">GPU TEMP</div>
+                        <div class="small-stat-val val-orange">64°C</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Overlay -->
+                <div class="progress-overlay" id="progOverlay">
+                    <div class="prog-header">
+                        <span>PROCESSING BATCH...</span>
+                        <span id="progPct">0%</span>
+                    </div>
+                    <div class="prog-bar-bg">
+                        <div class="prog-bar-fill" id="progFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Upload & History -->
+            <div class="right-col">
+                
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon-wrap">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 12 15 15"></polyline></svg>
+                    </div>
+                    <h2 class="upload-title">Video Batch Upload</h2>
+                    <p class="upload-desc">Drag and drop industrial footage here. Supported formats: <code>.MP4</code>, <code>.AVI</code>, <code>.MKV</code>. Maximum file size per batch: 2GB.</p>
+                    <div class="upload-actions">
+                        <button class="btn-dark" id="btnBrowse">BROWSE FILES</button>
+                        <button class="btn-outline-dark">CONNECT RTSP STREAM</button>
+                    </div>
+                    <input type="file" id="fileInput" accept="video/mp4,video/avi,video/x-matroska,.mp4,.avi,.mkv">
+                    
+                    <!-- Video Preview overlay -->
+                    <div class="video-preview-overlay" id="videoPreview">
+                        <div class="preview-header">
+                            <span class="preview-title" id="previewName">filename.mp4</span>
+                            <button class="btn-close-preview" id="btnClosePreview">✕ REMOVE</button>
+                        </div>
+                        <video id="previewPlayer" controls></video>
+                    </div>
+                </div>
+
+                <!-- Recent Jobs Table -->
+                <div class="recent-table-wrap">
+                    <div class="table-header">
+                        <span class="table-title">RECENT ANALYSIS JOBS</span>
+                        <span class="table-subtitle">Showing last 5 entries</span>
+                    </div>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>JOB ID</th>
+                                <th>FILENAME</th>
+                                <th>TOTAL COUNT</th>
+                                <th>ACCURACY</th>
+                                <th>STATUS</th>
+                                <th>REPORT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentJobsBody">
+                             <tr>
+                                 <td>#49022</td>
+                                 <td>conveyor_line_A_01.mp4</td>
+                                 <td class="td-orange">842</td>
+                                 <td>98.4%</td>
+                                 <td><span class="status-pill status-success">SUCCESS</span></td>
+                                 <td><a href="#" style="background:var(--text-light); color:white; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:700; display:inline-block; opacity:0.5; pointer-events:none;">DOWNLOAD CSV</a></td>
+                             </tr>
+                             <tr>
+                                 <td>#49021</td>
+                                 <td>night_shift_dock4.avi</td>
+                                 <td class="td-orange">1,204</td>
+                                 <td>97.2%</td>
+                                 <td><span class="status-pill status-success">SUCCESS</span></td>
+                                 <td><a href="#" style="background:var(--text-light); color:white; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:700; display:inline-block; opacity:0.5; pointer-events:none;">DOWNLOAD CSV</a></td>
+                             </tr>
+                             <tr>
+                                 <td>#49020</td>
+                                 <td>loading_bay_cam2.mp4</td>
+                                 <td class="td-orange">--</td>
+                                 <td>--</td>
+                                 <td><span class="status-pill status-failed">FAILED</span></td>
+                                 <td>--</td>
+                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function toggleDropdown(id) {
+            document.querySelectorAll('.dropdown-menu.active, .profile-dropdown.active').forEach(d => {
+                if (d.id !== id) d.classList.remove('active');
+            });
+            const el = document.getElementById(id);
+            el.classList.toggle('active');
+            const closer = (e) => {
+                if (!el.contains(e.target) && !e.target.closest('.notification-btn') && !e.target.closest('.user-profile')) {
+                    el.classList.remove('active');
+                    document.removeEventListener('click', closer);
+                }
+            };
+            if(el.classList.contains('active')) setTimeout(() => document.addEventListener('click', closer), 10);
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_role');
+            window.location.href = '/login';
+        }
+
+        function handleJobSearch(query) {
+            query = query.trim().toLowerCase();
+            const rows = document.querySelectorAll('#recentJobsBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            updateThemeIcon(isLight);
+        }
+
+        function updateThemeIcon(isLight) {
+            const icon = document.getElementById('themeIcon');
+            if (!icon) return;
+            if (isLight) {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+
+        (function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+                window.addEventListener('DOMContentLoaded', () => updateThemeIcon(true));
+            }
+        })();
+
+        const token = localStorage.getItem('access_token');
+
+        if (!token) window.location.href = '/login';
+
+        // Update Operator Info
+        const userRole = localStorage.getItem('user_role');
+        document.getElementById('sidebarOpName').textContent = userRole === 'admin' ? 'System Admin' : 'Active Operator';
+        document.getElementById('sidebarOpRole').textContent = userRole === 'admin' ? 'Full Access' : 'Shift Operator';
+
+        // --- Elements ---
+        const confInput = document.getElementById('confInput');
+
+        const confFill = document.getElementById('confFill');
+        const confThumb = document.getElementById('confThumb');
+        const confValText = document.getElementById('confValText');
+
+        const skipBtns = document.querySelectorAll('.btn-radio');
+        const skipValText = document.getElementById('skipValText');
+        
+        const uploadZone = document.getElementById('uploadZone');
+        const btnBrowse = document.getElementById('btnBrowse');
+        const fileInput = document.getElementById('fileInput');
+        const btnStart = document.getElementById('btnStart');
+        
+        const videoPreview = document.getElementById('videoPreview');
+        const previewPlayer = document.getElementById('previewPlayer');
+        const previewName = document.getElementById('previewName');
+        const btnClosePreview = document.getElementById('btnClosePreview');
+        
+        const progOverlay = document.getElementById('progOverlay');
+        const progFill = document.getElementById('progFill');
+        const progPct = document.getElementById('progPct');
+
+        // --- State ---
+        let selectedFile = null;
+        let frameSkip = 1;
+
+        // --- Confidence Slider Logic ---
+        function updateSlider() {
+            const val = parseFloat(confInput.value);
+            const min = parseFloat(confInput.min);
+            const max = parseFloat(confInput.max);
+            const pct = ((val - min) / (max - min)) * 100;
+            
+            confFill.style.width = pct + '%';
+            confThumb.style.left = pct + '%';
+            confValText.textContent = val.toFixed(2);
+        }
+        confInput.addEventListener('input', updateSlider);
+        updateSlider(); // init
+
+        // --- Frame Skip Logic ---
+        skipBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                skipBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                frameSkip = parseInt(btn.dataset.val);
+                skipValText.textContent = frameSkip;
+            });
+        });
+
+        // --- Upload Logic ---
+        btnBrowse.addEventListener('click', () => fileInput.click());
+        
+        uploadZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+        
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            if(e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', () => {
+            if(fileInput.files.length) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            selectedFile = file;
+            const url = URL.createObjectURL(file);
+            previewPlayer.src = url;
+            previewName.textContent = file.name;
+            videoPreview.classList.add('active');
+            btnStart.disabled = false;
+        }
+        
+        btnClosePreview.addEventListener('click', () => {
+            selectedFile = null;
+            previewPlayer.src = '';
+            videoPreview.classList.remove('active');
+            btnStart.disabled = true;
+            fileInput.value = '';
+        });
+
+        // --- API Submission ---
+        btnStart.addEventListener('click', async () => {
+            if(!selectedFile) return;
+            
+            const confidence = confInput.value;
+            
+            // UI State updates
+            btnStart.disabled = true;
+            btnClosePreview.style.display = 'none'; // prevent closing during proc
+            progOverlay.classList.add('active');
+            
+            // Simulation of progress up to 95%
+            let pct = 0;
+            const sim = setInterval(() => {
+                if (pct < 70) {
+                    pct += Math.random() * 8;
+                } else if (pct < 90) {
+                    pct += Math.random() * 2;
+                } else if (pct < 98) {
+                    pct += 0.1; // Slow down as we hit the CPU-heavy part
+                }
+                
+                pct = Math.min(pct, 98);
+                progFill.style.width = pct + '%';
+                progPct.textContent = Math.round(pct) + '%';
+                
+                if(pct >= 90) {
+                    document.querySelector('.prog-label').textContent = 'Processing Video (CPU Intensive)... This may take a few minutes.';
+                } else if (pct >= 40) {
+                    document.querySelector('.prog-label').textContent = 'Analyzing Frames...';
+                }
+            }, 800);
+
+
+
+            const fd = new FormData();
+            fd.append('file', selectedFile);
+
+            try {
+                const url = `/upload/?frame_skip=${frameSkip}&confidence=${confidence}`;
+                const res = await fetch(url, { 
+                    method: 'POST', 
+                    body: fd,
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error('Server error');
+                const initialData = await res.json();
+                const jobId = initialData.job_id;
+
+                // Start Polling
+                const pollInterval = setInterval(async () => {
+                    try {
+                        const statusRes = await fetch(`/api/job/${jobId}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const statusData = await statusRes.json();
+
+                        if (statusData.status === 'COMPLETED') {
+                            clearInterval(pollInterval);
+                            clearInterval(sim);
+                            finishJob(statusData);
+                        } else if (statusData.status === 'FAILED') {
+                            clearInterval(pollInterval);
+                            clearInterval(sim);
+                            alert("Processing failed on server.");
+                            resetUI();
+                        }
+                    } catch (e) {
+                        console.error("Polling error:", e);
+                    }
+                }, 3000);
+
+            } catch (err) {
+                clearInterval(sim);
+                resetUI();
+                alert("Upload failed. Check your network or ngrok connection.");
+            }
+        });
+
+        function resetUI() {
+            progFill.style.width = '0%';
+            progOverlay.classList.remove('active');
+            btnClosePreview.style.display = 'block';
+            btnStart.disabled = false;
+        }
+
+        function finishJob(data) {
+            progFill.style.width = '100%';
+            progPct.textContent = '100%';
+            document.querySelector('.prog-label').textContent = 'BATCH COMPLETE';
+
+            setTimeout(() => {
+                resetUI();
+                const tbody = document.getElementById('recentJobsBody');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><a href="/report?job_id=${data.job_id}" style="color:var(--text-main); text-decoration:none;">#${data.job_id.substring(0,5)}</a></td>
+                    <td>${data.video}</td>
+                    <td class="td-orange">${data.bag_count}</td>
+                    <td>--</td>
+                    <td><span class="status-pill status-success">SUCCESS</span></td>
+                    <td><a href="/download/csv/${data.job_id}" style="background:var(--brand-orange); color:white; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:700; display:inline-block;">DOWNLOAD CSV</a></td>
+
+                `;
+                tbody.insertBefore(tr, tbody.firstChild);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

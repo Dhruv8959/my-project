@@ -1,0 +1,17 @@
+# ── Core ────────────────────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9   # required by FastAPI for file uploads
+aiofiles>=23.2.0          # required by FastAPI for StaticFiles
+
+# ── Vision / ML (CPU-only build of PyTorch is pulled automatically) ──────────
+ultralytics>=8.2.0        # YOLO v8/v11 — auto-installs torch CPU if no CUDA
+opencv-python-headless>=4.9.0   # headless = no GUI deps (server-safe)
+
+# ── Data ────────────────────────────────────────────────────────────────────
+pandas>=2.0.0
+sqlalchemy>=2.0.0
+passlib[bcrypt]>=1.7.4
+bcrypt==4.0.1              # pinned to fix passlib compatibility bug
+python-jose[cryptography]>=3.3.0
+
