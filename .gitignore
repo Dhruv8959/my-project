@@ -1,17 +1,23 @@
-venv/
-uploads/
-outputs/
-runs/
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-*.mp4
-*.csv
-*.db
-*.sqlite3
+# Project specific
+cement_counter.db
+outputs/
+uploads/
 
-# *.pt
-# *.pth
-*.onnx
+# OS
+.DS_Store
+Thumbs.db
 
-.idea/
-.vscode/
+# Environment variables
+.env
