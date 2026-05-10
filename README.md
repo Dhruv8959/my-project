@@ -70,10 +70,10 @@ python run_local.py --video factory.mp4 --frame_skip 3 --confidence 0.45
 ### Option B — FastAPI Server
 
 ```bash
-uvicorn main:app --reload --host 172.18.170.109 --port 8000
+uvicorn main:app --reload --host 172.22.16.1 --port 8000
 ```
 
-Then open **http://172.18.170.109:8000/docs** for the interactive Swagger UI.
+Then open **http://172.22.16.1:8000/docs** for the interactive Swagger UI.
 
 **API Endpoints:**
 
@@ -85,7 +85,7 @@ Then open **http://172.18.170.109:8000/docs** for the interactive Swagger UI.
 
 **Example with curl:**
 ```bash
-curl -X POST "http://172.18.170.109:8000/upload/?frame_skip=2&confidence=0.4" \
+curl -X POST "http://172.22.16.1:8000/upload/?frame_skip=2&confidence=0.4" \
      -F "file=@factory.mp4"
 ```
 

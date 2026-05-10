@@ -9,8 +9,8 @@ __pycache__/
 *.db
 *.sqlite3
 
-*.pt
-*.pth
+# *.pt
+# *.pth
 *.onnx
 
 .idea/

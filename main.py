@@ -377,4 +377,7 @@ def download_video(job_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="10.27.48.109", port=8000)
+    import os
+    # Get port from environment variable for Render, default to 8000
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
